@@ -3,12 +3,16 @@
 
 // 抽象構文木のノード
 struct Node {
-    NodeKind kind; // ノードの型
-    Node *lhs;     // 左辺
-    Node *rhs;     // 右辺
-    int val;       // kindがND_NUMの場合のみ使う
-    int offset;    // kindがND_LVARの場合のみ使う
-  };
+  NodeKind kind; // ノードの型
+  Node *lhs;     // 左辺
+  Node *rhs;     // 右辺
+  int val;       // kindがND_NUMの場合のみ使う
+  int offset;    // kindがND_LVARの場合のみ使う
+  //if用
+  Node* cond;
+  Node* then;
+  Node* els;
+};
 // トークン型
 struct Token {
     TokenKind kind; // トークンの型
@@ -27,7 +31,8 @@ void gen_lval(Node *node) {
     printf("  push rax\n");
 }
 
-//抽象構文木をアセンブラに書き換える
+static int label_id = 0;
+//抽象構文木をアセンブリに書き換える
 void gen(Node *node) {
     switch (node->kind){
       case ND_RETURN:
@@ -38,23 +43,26 @@ void gen(Node *node) {
         printf("  ret\n");
         return;
       case ND_IF:
+        label_id++;
         gen(node->cond);
         printf("  pop rax\n");
         printf("  cmp rax, 0\n");
         if(node->els){
-          printf("  je .Lelse201\n");
+          printf("  je .Lelse%d\n", label_id);
           gen(node->then);
-          printf("  jmp .Lend202\n");
-          printf("  .Lelse201:\n");
+          printf("  pop rax\n");  //値を捨てる
+          printf("  jmp .Lend%d\n", label_id);
+          printf("  .Lelse%d:\n", label_id);
           gen(node->els);
-          printf("  .Lend202:\n");
-
+          printf("  pop rax\n");  //値を捨てる
+          printf("  .Lend%d:\n", label_id);
         }
         else{
-          printf("  je  .Lend101\n");
+          printf("  je  .Lend%d\n", label_id);
           gen(node->then);
-          printf("  .Lend101:\n");
+          printf("  .Lend%d:\n", label_id);
         }
+        return;
     }
     switch (node->kind) {
         case ND_NUM:
