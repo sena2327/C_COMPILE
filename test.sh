@@ -33,6 +33,7 @@ assert 1 "abs = 1;return abs;"
 assert 1 "foo = 1;hoo = 2;return foo;"
 assert 1 "return 1;"
 assert 0 "if(1 == 1) 0;else 1;"
-assert 1 "if(1 == 2) 0;else 1;"
+assert 1 "if(1 == 2) return 0;else return 1;"
+assert 2 "if(1 == 2) return 0;else if(1 == 2) return 1;else return 2;"
 
 echo OK
