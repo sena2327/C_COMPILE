@@ -62,7 +62,13 @@ void error_at(char *loc, char *fmt, ...) {
 // 次のトークンが期待している記号のときには、トークンを1つ読み進めて
 // 真を返す。それ以外の場合には偽を返す。
 bool consume(char *op) {
-    if ((token->kind != TK_RESERVED && token->kind != TK_RETURN) || strlen(op) != token->len || memcmp(token->str, op, token->len))
+    if (token->kind != TK_RESERVED || strlen(op) != token->len || memcmp(token->str, op, token->len))
+      return false;
+    else if (token->kind != TK_RETURN || strlen(op) != token->len || memcmp(token->str, op, token->len))
+      return false;
+    else if (token->kind != TK_IF || strlen(op) != token->len || memcmp(token->str, op, token->len))
+      return false;
+    else if (token->kind != TK_ELSE || strlen(op) != token->len || memcmp(token->str, op, token->len))
       return false;
     token = token->next;
     return true;
@@ -305,7 +311,7 @@ Node *stmt() {
     node->kind = ND_RETURN;
     node->lhs = expr();
   } 
-  else if(comsume("if")){
+  else if(consume("if")){
     if (consume("(")) {
       node = calloc(1, sizeof(Node));
       node->kind = ND_IF;
@@ -317,17 +323,17 @@ Node *stmt() {
     else{
       error_at(token->str, "ifの使い方が正しくありません");
     }
+    if(consume("else")){
+      node = calloc(1, sizeof(Node));
+      node->kind = ND_ELSE;
+      node->lhs = stmt();
+      return node;
+    }
   }
-  else if(comsume("else")){
-    node = calloc(1, sizeof(Node));
-    node->kind = ND_ELSE;
-    node->lhs = stmt();
-    return node;
-  }
-  else if(comsume("while")){
+  else if(consume("while")){
 
   }
-  else if(comsume("for")){
+  else if(consume("for")){
 
   }
   else {
