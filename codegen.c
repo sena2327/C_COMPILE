@@ -43,7 +43,7 @@ void gen(Node *node) {
         printf("  ret\n");
         return;
       case ND_IF:
-        label_id++;
+        int id = label_id++;
         gen(node->cond);
         printf("  pop rax\n");
         printf("  cmp rax, 0\n");
@@ -60,6 +60,7 @@ void gen(Node *node) {
         else{
           printf("  je  .Lend%d\n", label_id);
           gen(node->then);
+          printf("  pop rax\n");  //値を捨てる
           printf("  .Lend%d:\n", label_id);
         }
         return;
