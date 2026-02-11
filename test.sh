@@ -29,5 +29,7 @@ assert 1 "1 == 1;"
 assert 1 "1 != 2;"
 assert 1 "a = 1;"
 assert 1 "abs = 1;"
+assert 1 "abs = 1;return abs;"
+assert 1 "foo = 1;hoo = 2;return foo;"
 
 echo OK

@@ -58,7 +58,7 @@ void error_at(char *loc, char *fmt, ...) {
 // 次のトークンが期待している記号のときには、トークンを1つ読み進めて
 // 真を返す。それ以外の場合には偽を返す。
 bool consume(char *op) {
-    if (token->kind != TK_RESERVED || token->kind != TK_RETURN || strlen(op) != token->len || memcmp(token->str, op, token->len))
+    if ((token->kind != TK_RESERVED && token->kind != TK_RETURN) || strlen(op) != token->len || memcmp(token->str, op, token->len))
       return false;
     token = token->next;
     return true;
@@ -210,7 +210,7 @@ Node *primary() {
       lvar->next = locals;
       lvar->name = tok->str;
       lvar->len = tok->len;
-      lvar->offset = locals->offset + 8;
+      lvar->offset = locals ?  locals->offset + 8 : 8 ;
       node->offset = lvar->offset;
       locals = lvar;
     }
@@ -300,7 +300,30 @@ Node *stmt() {
     node = calloc(1, sizeof(Node));
     node->kind = ND_RETURN;
     node->lhs = expr();
-  } else {
+  } 
+  else if(comsume("if")){
+    if (consume("(")) {
+      Node *node = expr();
+      expect(")");
+      return node;
+    }
+    else{
+      error_at(token->str, "ifの使い方が正しくありません");
+    }
+  }
+  else if(comsume("else")){
+    node = calloc(1, sizeof(Node));
+    node->kind = ND_ELSE;
+    node->lhs = stmt();
+    expect(")");
+  }
+  else if(comsume("while")){
+
+  }
+  else if(comsume("for")){
+
+  }
+  else {
     node = expr();
   }
 
