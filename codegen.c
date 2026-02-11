@@ -29,13 +29,36 @@ void gen_lval(Node *node) {
 
 //抽象構文木をアセンブラに書き換える
 void gen(Node *node) {
-    if (node->kind == ND_RETURN) {
-      gen(node->lhs);
-      printf("  pop rax\n");
-      printf("  mov rsp, rbp\n");
-      printf("  pop rbp\n");
-      printf("  ret\n");
-      return;
+    switch (node->kind){
+      case ND_RETURN:
+        gen(node->lhs);
+        printf("  pop rax\n");
+        printf("  mov rsp, rbp\n");
+        printf("  pop rbp\n");
+        printf("  ret\n");
+        return;
+      case ND_IF:
+        gen(node->cond);
+        printf("  pop rax\n");
+        printf("  cmp rax, 0\n");
+        if(node->els){
+          printf("  je .Lelse201\n");
+          gen(node->then);
+          printf("  jmp .Lend202\n");
+          printf("  .Lelse201:\n");
+          gen(node->els);
+          printf("  .Lend202:\n");
+
+        }
+        else{
+          printf("  je  .Lend101\n");
+          gen(node->then);
+          printf("  .Lend101:\n");
+        }
+
+
+
+
     }
     switch (node->kind) {
         case ND_NUM:

@@ -336,6 +336,7 @@ Node *stmt() {
     }
     else{
       error_at(token->str, "ifの使い方が正しくありません");
+    }
   }
   else if(consume("while")){
 
@@ -351,6 +352,7 @@ Node *stmt() {
     error_at(token->str, "';'ではありません");
   return node;
 }
+
 
 Node *program() {
   int i = 0;
