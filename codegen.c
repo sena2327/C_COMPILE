@@ -63,6 +63,7 @@ void gen(Node *node) {
           printf("  pop rax\n");  //値を捨てる
           printf("  .Lend%d:\n", id);
         }
+        printf("  push 0\n"); //mainでpopするので、入れておく
         return;
     }
     switch (node->kind) {
