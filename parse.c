@@ -13,6 +13,10 @@ struct Node {
     Node *rhs;     // 右辺
     int val;       // kindがND_NUMの場合のみ使う
     int offset;    // kindがND_LVARの場合のみ使う
+    //if用
+    Node* cond;
+    Node* then;
+    Node* els;
   };
 
 struct Token {
@@ -303,8 +307,11 @@ Node *stmt() {
   } 
   else if(comsume("if")){
     if (consume("(")) {
-      Node *node = expr();
+      node = calloc(1, sizeof(Node));
+      node->kind = ND_IF;
+      node->cond = expr();
       expect(")");
+      node->then = stmt();
       return node;
     }
     else{
@@ -315,7 +322,7 @@ Node *stmt() {
     node = calloc(1, sizeof(Node));
     node->kind = ND_ELSE;
     node->lhs = stmt();
-    expect(")");
+    return node;
   }
   else if(comsume("while")){
 
