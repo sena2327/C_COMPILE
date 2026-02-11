@@ -31,5 +31,7 @@ assert 1 "a = 1;"
 assert 1 "abs = 1;"
 assert 1 "abs = 1;return abs;"
 assert 1 "foo = 1;hoo = 2;return foo;"
+assert 1 "return 1;"
+assert 0 "if(1 == 1)0;else1;"
 
 echo OK

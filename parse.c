@@ -338,15 +338,18 @@ Node *stmt() {
       error_at(token->str, "ifの使い方が正しくありません");
     }
   }
+  /*
   else if(consume("while")){
 
   }
   else if(consume("for")){
 
   }
+  */
   else {
     node = expr();
   }
+
 
   if (!consume(";"))
     error_at(token->str, "';'ではありません");
