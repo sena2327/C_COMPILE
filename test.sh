@@ -28,5 +28,6 @@ assert 0 "1 >= 30;"
 assert 1 "1 == 1;"
 assert 1 "1 != 2;"
 assert 1 "a = 1;"
+assert 1 "abs = 1;"
 
 echo OK

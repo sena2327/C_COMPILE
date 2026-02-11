@@ -29,6 +29,14 @@ void gen_lval(Node *node) {
 
 //抽象構文木をアセンブラに書き換える
 void gen(Node *node) {
+    if (node->kind == ND_RETURN) {
+      gen(node->lhs);
+      printf("  pop rax\n");
+      printf("  mov rsp, rbp\n");
+      printf("  pop rbp\n");
+      printf("  ret\n");
+      return;
+    }
     switch (node->kind) {
         case ND_NUM:
           printf("  push %d\n", node->val);
@@ -100,7 +108,6 @@ void gen(Node *node) {
       printf("  setne al\n");
       printf("  movzb rax, al\n");
       break;
-    
     }
   
     printf("  push rax\n");
