@@ -48,20 +48,20 @@ void gen(Node *node) {
         printf("  pop rax\n");
         printf("  cmp rax, 0\n");
         if(node->els){
-          printf("  je .Lelse%d\n", label_id);
+          printf("  je .Lelse%d\n", id);
           gen(node->then);
           printf("  pop rax\n");  //値を捨てる
-          printf("  jmp .Lend%d\n", label_id);
-          printf("  .Lelse%d:\n", label_id);
+          printf("  jmp .Lend%d\n", id);
+          printf("  .Lelse%d:\n", id);
           gen(node->els);
           printf("  pop rax\n");  //値を捨てる
-          printf("  .Lend%d:\n", label_id);
+          printf("  .Lend%d:\n", id);
         }
         else{
-          printf("  je  .Lend%d\n", label_id);
+          printf("  je  .Lend%d\n", id);
           gen(node->then);
           printf("  pop rax\n");  //値を捨てる
-          printf("  .Lend%d:\n", label_id);
+          printf("  .Lend%d:\n", id);
         }
         return;
     }
