@@ -62,13 +62,12 @@ void error_at(char *loc, char *fmt, ...) {
 // 次のトークンが期待している記号のときには、トークンを1つ読み進めて
 // 真を返す。それ以外の場合には偽を返す。
 bool consume(char *op) {
-    if (token->kind != TK_RESERVED || strlen(op) != token->len || memcmp(token->str, op, token->len))
+    if (strlen(op) != token->len || memcmp(token->str, op, token->len))
       return false;
-    else if (token->kind != TK_RETURN || strlen(op) != token->len || memcmp(token->str, op, token->len))
-      return false;
-    else if (token->kind != TK_IF || strlen(op) != token->len || memcmp(token->str, op, token->len))
-      return false;
-    else if (token->kind != TK_ELSE || strlen(op) != token->len || memcmp(token->str, op, token->len))
+    if (token->kind != TK_RETURN 
+      && token->kind != TK_IF
+      && token->kind != TK_ELSE 
+      && token->kind != TK_RESERVED)
       return false;
     token = token->next;
     return true;
@@ -138,6 +137,18 @@ Token *tokenize(char *p) {
       cur = new_token(TK_RETURN, cur, p);
       cur->len = 6; 
       p+=6;
+      continue;
+    }
+    else if(!strncmp(p, "if", 2) && !is_alnum(p[2])){
+      cur = new_token(TK_IF, cur, p);
+      cur->len = 2; 
+      p+=2;
+      continue;
+    }
+    else if(!strncmp(p, "else", 4) && !is_alnum(p[4])){
+      cur = new_token(TK_ELSE, cur, p);
+      cur->len = 4; 
+      p+=4;
       continue;
     }
     else if ('a' <= *p && *p <= 'z') {
@@ -318,17 +329,13 @@ Node *stmt() {
       node->cond = expr();
       expect(")");
       node->then = stmt();
+      if(consume("else")){
+      node->els = stmt();
+      }
       return node;
     }
     else{
       error_at(token->str, "ifの使い方が正しくありません");
-    }
-    if(consume("else")){
-      node = calloc(1, sizeof(Node));
-      node->kind = ND_ELSE;
-      node->lhs = stmt();
-      return node;
-    }
   }
   else if(consume("while")){
 
