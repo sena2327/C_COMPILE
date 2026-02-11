@@ -55,10 +55,6 @@ void gen(Node *node) {
           gen(node->then);
           printf("  .Lend101:\n");
         }
-
-
-
-
     }
     switch (node->kind) {
         case ND_NUM:
