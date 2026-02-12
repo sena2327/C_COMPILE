@@ -43,6 +43,20 @@ void gen_lval(Node *node) {
     printf("  push rax\n");
 }
 
+struct LVar {
+  struct LVar *next;
+  char *name;
+  int len;
+  int offset;
+};
+extern LVar *locals;
+
+static int count_locals(void) {
+  int n = 0;
+  for (LVar *v = locals; v; v = v->next) n++;
+  return n;
+}
+
 static int label_id = 0;
 //抽象構文木をアセンブリに書き換える
 void gen(Node *node) {
@@ -50,6 +64,44 @@ void gen(Node *node) {
       case ND_RETURN:
         gen(node->lhs);
         printf("  pop rax\n");
+        printf("  mov rsp, rbp\n");
+        printf("  pop rbp\n");
+        printf("  ret\n");
+        return;
+      case ND_FUNCDEF:
+        printf(".globl %.*s\n", node->func_len, node->func_name);
+        printf("%.*s:\n", node->func_len, node->func_name);
+    
+        // プロローグ
+        printf("  push rbp\n");
+        printf("  mov rbp, rsp\n");
+    
+        int nlocals = count_locals();
+        int stack_size = nlocals * 8;
+        // 16バイトアライン（任意だが安全）
+        if (stack_size % 16) stack_size += 8;
+        printf("  sub rsp, %d\n", stack_size);
+    
+        // 引数退避
+        char *regs[6] = {"rdi","rsi","rdx","rcx","r8","r9"};
+    
+        // locals を配列化して最後の arg_len を params として扱う
+        LVar *vars[128];
+        int idx = 0;
+        for (LVar *v = locals; v; v = v->next) vars[idx++] = v;
+    
+        for (int i = 0; i < node->arg_len && i < 6; i++) {
+          LVar *param = vars[idx - 1 - i]; // param1 が最後尾
+          printf("  mov [rbp-%d], %s\n", param->offset, regs[i]);
+        }
+    
+        // 本体
+        for (Node *cur = node->body; cur; cur = cur->next) {
+          gen(cur);
+          printf("  pop rax\n");
+        }
+    
+        // エピローグ
         printf("  mov rsp, rbp\n");
         printf("  pop rbp\n");
         printf("  ret\n");
