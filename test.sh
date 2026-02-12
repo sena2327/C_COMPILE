@@ -41,5 +41,7 @@ assert 3 "a = 0; while(a < 3) a = a + 1; return a;"
 assert 3 "b = 0;for(a = 0; a < 3; a = a + 1) b = b + 1; return b;"
 assert 3 "b = 0;for(a = 0; a < 3; a = a + 1) {b = b + 1;} return b;"
 assert 0 "foo();"
+assert 2 "hoo(1,1);"
+assert 100 "hoo(50,50);"
 
 echo OK

@@ -111,6 +111,14 @@ void gen(Node *node) {
         }
         return;
       case ND_FUNCTION:
+        for(int i = 0; i < node->arg_len; i++){
+          gen(node->func_arg[i]);
+        }
+        char* reg[6] = { "rdi", "rsi", "rdx", "rcx", "r8", "r9" };
+        for(int i = 0; i < node->arg_len; i++){
+          printf("  pop %s\n",reg[i]);
+        }
+
         printf("  call %.*s\n", node->func_len, node->func_name);
         printf("  push rax\n"); //mainでpopするので、入れておく
         return;
