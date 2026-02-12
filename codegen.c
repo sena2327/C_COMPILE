@@ -97,10 +97,11 @@ void gen(Node *node) {
         printf("  push 0\n"); //mainでpopするので、入れておく
         return;
       case ND_BLOCK:
-        while(node->body){
-          gen(node->body);
+        Node *cur = node->body;
+        while (cur) {
+          gen(cur);
           printf("  pop rax\n");
-          node = node->next;
+          cur = cur->next;
         }
         return;
     }
