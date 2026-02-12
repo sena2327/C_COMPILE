@@ -398,7 +398,7 @@ Node *stmt() {
     if (consume("(")) {
       node = calloc(1, sizeof(Node));
       node->kind = ND_FOR;
-      if (consume(";")) node->init = NULL; else {node->init = expr(); expect(";")};
+      if (consume(";")) node->init = NULL; else {node->init = expr(); expect(";");}
       if (consume(";")) node->cond = NULL; else { node->cond = expr(); expect(";"); }
       if (consume(")")) node->inc = NULL; else { node->inc = expr(); expect(")"); }
       node->then = stmt();

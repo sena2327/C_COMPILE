@@ -15,6 +15,9 @@ struct Node {
   //for用
   Node* init;
   Node* inc;
+  //block
+  Node* body;
+  Node* next;
 };
 // トークン型
 struct Token {
