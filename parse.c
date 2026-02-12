@@ -23,6 +23,9 @@ struct Node {
     //block
     Node* body;
     Node* next;
+    //関数よう
+    char* func_name;
+    int func_len;
   };
 
 struct Token {
@@ -247,18 +250,28 @@ Node *primary() {
   Token *tok = consume_ident();
   if (tok) {
     Node *node = calloc(1, sizeof(Node));
-    node->kind = ND_LVAR;
-    LVar *lvar = find_lvar(tok);
-    if (lvar) {
-      node->offset = lvar->offset;
-    } else {
-      lvar = calloc(1, sizeof(LVar));
-      lvar->next = locals;
-      lvar->name = tok->str;
-      lvar->len = tok->len;
-      lvar->offset = locals ?  locals->offset + 8 : 8 ;
-      node->offset = lvar->offset;
-      locals = lvar;
+    //引数なしの関数
+    if(consume("(")){
+      expect(")");
+      node->kind = ND_FUNCTION;
+      node->func_name = tok->str;
+      node->len -> tok->len;
+    }
+    //変数扱い
+    else{
+      node->kind = ND_LVAR;
+      LVar *lvar = find_lvar(tok);
+      if (lvar) {
+        node->offset = lvar->offset;
+      } else {
+        lvar = calloc(1, sizeof(LVar));
+        lvar->next = locals;
+        lvar->name = tok->str;
+        lvar->len = tok->len;
+        lvar->offset = locals ?  locals->offset + 8 : 8 ;
+        node->offset = lvar->offset;
+        locals = lvar;
+      }
     }
     return node;
   }

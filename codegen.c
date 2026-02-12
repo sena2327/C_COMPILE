@@ -104,6 +104,8 @@ void gen(Node *node) {
           cur = cur->next;
         }
         return;
+      case ND_FUNCTION:
+        printf("  call %d",node->func_name);
     }
     switch (node->kind) {
         case ND_NUM:
