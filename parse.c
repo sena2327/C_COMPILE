@@ -259,11 +259,12 @@ Node *primary() {
       int len = 0;
       if (!consume(")")) {
         node->func_arg[len] = expr();
+        len++;
         while (consume(",")) {
           node->func_arg[len] = expr();
           len++;
         }
-        node->func_len = len;
+        node->arg_len = len;
         expect(")");
       }
       node->kind = ND_FUNCTION;
