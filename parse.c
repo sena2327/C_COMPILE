@@ -20,6 +20,9 @@ struct Node {
     //for用
     Node* init;
     Node* inc;
+    //block
+    Node* body;
+    Node* next;
   };
 
 struct Token {
@@ -163,9 +166,13 @@ Token *tokenize(char *p) {
       continue;
     }
     else if(!strncmp(p, "for", 3) && !is_alnum(p[3])){
-      cur = new_token(TK_WHILE, cur, p);
+      cur = new_token(TK_FOR, cur, p);
       cur->len = 3; 
       p+=3;
+      continue;
+    }
+    else if(strchr("{}", *p)){
+      cur = new_token(TK_BLOCK, cur, p++);
       continue;
     }
     else if ('a' <= *p && *p <= 'z') {
@@ -339,6 +346,24 @@ Node *stmt() {
     node->kind = ND_RETURN;
     node->lhs = expr();
   } 
+  else if (consume("{")) {
+    Node *head = NULL;
+    Node *cur = NULL;
+    while(!consume("}")){
+      Node *s = stmt();
+      if (!head) {
+        head = s;
+        cur = s;
+      } else {
+        cur->next = s;
+        cur = s;
+      }
+    }
+    node = calloc(1, sizeof(Node));
+    node->kind = ND_BLOCK;
+    node->body = head;
+    return node;
+  } 
   else if(consume("if")){
     if (consume("(")) {
       node = calloc(1, sizeof(Node));
@@ -372,12 +397,9 @@ Node *stmt() {
     if (consume("(")) {
       node = calloc(1, sizeof(Node));
       node->kind = ND_FOR;
-      node->init = expr();
-      expect(";");
-      node->cond = expr();
-      expect(";");
-      node->inc = expr();
-      expect(")");
+      if (consume(";")) node->init = NULL; else node->init = expr(); expect(";");
+      if (consume(";")) node->cond = NULL; else { node->cond = expr(); expect(";"); }
+      if (consume(")")) node->inc = NULL; else { node->inc = expr(); expect(")"); }
       node->then = stmt();
       return node;
     }

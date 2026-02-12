@@ -80,6 +80,7 @@ void gen(Node *node) {
       case ND_FOR:
         int for_id = label_id++;
         gen(node->init);
+        printf("  pop rax\n");
         printf("  .Lbegin%d:\n", for_id);
         gen(node->cond);
         printf("  pop rax\n");
@@ -87,8 +88,9 @@ void gen(Node *node) {
         printf("  je  .Lend%d\n", for_id);
         gen(node->then);
         gen(node->inc);
+        printf("  pop rax\n");
         printf("  jmp .Lbegin%d\n", for_id);
-        printf("  .Lend%d:\n", while_id);
+        printf("  .Lend%d:\n", for_id);
         printf("  push 0\n"); //mainでpopするので、入れておく
         return;
     }
