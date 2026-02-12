@@ -24,6 +24,7 @@ typedef enum {
   ND_FOR, //for
   ND_BLOCK, //{}
   ND_FUNCTION,  //関数
+  ND_FUNCDEF,  //関数定義
 } NodeKind;
 
 typedef struct Node Node;

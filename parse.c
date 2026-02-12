@@ -445,6 +445,20 @@ Node *stmt() {
   return node;
 }
 
+LVar *register_lvar(Token *tok) {
+  LVar *lvar = find_lvar(tok);
+  if (lvar)
+    return lvar;
+
+  lvar = calloc(1, sizeof(LVar));
+  lvar->next = locals;
+  lvar->name = tok->str;
+  lvar->len = tok->len;
+  lvar->offset = locals ? locals->offset + 8 : 8;
+  locals = lvar;
+  return lvar;
+}
+
 int params() {
   int n = 0;
   Token *tok = consume_ident();
@@ -467,18 +481,33 @@ int params() {
 
 Node *funcdef() {
   Token *tok = consume_ident();
-  if(!tok){
-    error("関数定義が破綻しています"):
+  if (!tok)
+    error("関数定義が破綻しています");
+
+  locals = NULL;  // 関数ごとにローカルを初期化
+
+  Node *fn = calloc(1, sizeof(Node));
+  fn->kind = ND_FUNCDEF;
+  fn->func_name = tok->str;
+  fn->func_len  = tok->len;
+
+  expect("(");
+  if (!consume(")")) {
+    fn->arg_len = params();       // 引数の数を保存
+    expect(")");
   }
-  consume("(");
-  if(!consume(")")){
-    params();
+
+  expect("{");
+  // ブロックを構築するなら ND_BLOCK を作って body に繋ぐ
+  Node *head = NULL;
+  Node *cur = NULL;
+  while (!consume("}")) {
+    Node *s = stmt();
+    if (!head) head = cur = s;
+    else { cur->next = s; cur = s; }
   }
-  expect(")");
-  consume("{");
-  while(!consume("}")){
-    stmt();
-  }
+  fn->body = head;
+  return fn;
 }
 
 Node *program() {
