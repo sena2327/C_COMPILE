@@ -12,6 +12,9 @@ struct Node {
   Node* cond;
   Node* then;
   Node* els;
+  //for用
+  Node* init;
+  Node* inc;
 };
 // トークン型
 struct Token {
@@ -70,9 +73,24 @@ void gen(Node *node) {
         printf("  cmp rax, 0\n");
         printf("  je  .Lend%d\n", while_id);
         gen(node->then);
+        printf("  push 0\n"); //mainでpopするので、入れておく
         printf("  jmp .Lbegin%d\n", while_id);
         printf("  .Lend%d:\n", while_id);
-
+        return;
+      case ND_FOR:
+        int for_id = label_id++;
+        gen(node->init);
+        printf("  .Lbegin%d:\n", for_id);
+        gen(node->cond);
+        printf("  pop rax\n");
+        printf("  cmp rax, 0\n");
+        printf("  je  .Lend%d\n", for_id);
+        gen(node->then);
+        gen(node->inc);
+        printf("  jmp .Lbegin%d\n", for_id);
+        printf("  .Lend%d:\n", while_id);
+        printf("  push 0\n"); //mainでpopするので、入れておく
+        return;
     }
     switch (node->kind) {
         case ND_NUM:

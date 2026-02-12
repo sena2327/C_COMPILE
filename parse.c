@@ -17,6 +17,9 @@ struct Node {
     Node* cond;
     Node* then;
     Node* els;
+    //for用
+    Node* init;
+    Node* inc;
   };
 
 struct Token {
@@ -68,6 +71,7 @@ bool consume(char *op) {
       && token->kind != TK_IF
       && token->kind != TK_ELSE 
       && token->kind != TK_WHILE
+      && token->kind != TK_FOR
       && token->kind != TK_RESERVED)
       return false;
     token = token->next;
@@ -156,6 +160,12 @@ Token *tokenize(char *p) {
       cur = new_token(TK_WHILE, cur, p);
       cur->len = 5; 
       p+=5;
+      continue;
+    }
+    else if(!strncmp(p, "for", 3) && !is_alnum(p[3])){
+      cur = new_token(TK_WHILE, cur, p);
+      cur->len = 3; 
+      p+=3;
       continue;
     }
     else if ('a' <= *p && *p <= 'z') {
@@ -358,11 +368,23 @@ Node *stmt() {
       error_at(token->str, "whileの使い方が正しくありません");
     }
   }
-  /*
   else if(consume("for")){
-
+    if (consume("(")) {
+      node = calloc(1, sizeof(Node));
+      node->kind = ND_FOR;
+      node->init = expr();
+      expect(";");
+      node->cond = expr();
+      expect(";");
+      node->inc = expr();
+      expect(")");
+      node->then = stmt();
+      return node;
+    }
+    else{
+      error_at(token->str, "forの使い方が正しくありません");
+    }
   }
-  */
   else {
     node = expr();
   }
