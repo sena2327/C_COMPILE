@@ -23,20 +23,6 @@ int main(int argc, char **argv) {
     for (int i = 0; code[i]; i++) {
       gen(code[i]);
   }
-    // プロローグ
-    // 変数26個分の領域を確保する
-    printf("  push rbp\n");
-    printf("  mov rbp, rsp\n");
-    printf("  sub rsp, 208\n");
-
-    // エピローグ
-    // 最後の式の結果がRAXに残っているのでそれが返り値になる
-  
-    // スタックトップに式全体の値が残っているはずなので
-    // それをRAXにロードして関数からの返り値とする
-    printf("  mov rsp, rbp\n");
-    printf("  pop rbp\n");
-    printf("  ret\n");
     printf(".section .note.GNU-stack,\"\",@progbits\n");
     return 0;
   }
