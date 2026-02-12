@@ -1,10 +1,12 @@
 #!/bin/bash
+cc -c -o helper.o helper.c
+
 assert() {
   expected="$1"
   input="$2"
 
   ./9cc "$input" > tmp.s
-  x86_64-linux-gnu-gcc -static -o tmp tmp.s
+  x86_64-linux-gnu-gcc -static -o tmp tmp.s helper.o
   qemu-x86_64 ./tmp
   actual="$?"
 
@@ -38,5 +40,6 @@ assert 2 "if(1 == 2) return 0;else if(1 == 2) return 1;else return 2;"
 assert 3 "a = 0; while(a < 3) a = a + 1; return a;"
 assert 3 "b = 0;for(a = 0; a < 3; a = a + 1) b = b + 1; return b;"
 assert 3 "b = 0;for(a = 0; a < 3; a = a + 1) {b = b + 1;} return b;"
+assert 0 "foo();"
 
 echo OK
