@@ -67,6 +67,7 @@ bool consume(char *op) {
     if (token->kind != TK_RETURN 
       && token->kind != TK_IF
       && token->kind != TK_ELSE 
+      && token->kind != TK_WHILE
       && token->kind != TK_RESERVED)
       return false;
     token = token->next;
@@ -149,6 +150,12 @@ Token *tokenize(char *p) {
       cur = new_token(TK_ELSE, cur, p);
       cur->len = 4; 
       p+=4;
+      continue;
+    }
+    else if(!strncmp(p, "while", 5) && !is_alnum(p[5])){
+      cur = new_token(TK_WHILE, cur, p);
+      cur->len = 5; 
+      p+=5;
       continue;
     }
     else if ('a' <= *p && *p <= 'z') {
@@ -338,10 +345,20 @@ Node *stmt() {
       error_at(token->str, "ifの使い方が正しくありません");
     }
   }
-  /*
   else if(consume("while")){
-
+    if (consume("(")) {
+      node = calloc(1, sizeof(Node));
+      node->kind = ND_WHILE;
+      node->cond = expr();
+      expect(")");
+      node->then = stmt();
+      return node;
+    }
+    else{
+      error_at(token->str, "whileの使い方が正しくありません");
+    }
   }
+  /*
   else if(consume("for")){
 
   }

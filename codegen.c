@@ -43,25 +43,36 @@ void gen(Node *node) {
         printf("  ret\n");
         return;
       case ND_IF:
-        int id = label_id++;
+        int if_id = label_id++;
         gen(node->cond);
         printf("  pop rax\n");
         printf("  cmp rax, 0\n");
         if(node->els){
-          printf("  je .Lelse%d\n", id);
+          printf("  je .Lelse%d\n", if_id);
           gen(node->then);
-          printf("  jmp .Lend%d\n", id);
-          printf("  .Lelse%d:\n", id);
+          printf("  jmp .Lend%d\n", if_id);
+          printf("  .Lelse%d:\n", if_id);
           gen(node->els);
-          printf("  .Lend%d:\n", id);
+          printf("  .Lend%d:\n", if_id);
         }
         else{
-          printf("  je  .Lend%d\n", id);
+          printf("  je  .Lend%d\n", if_id);
           gen(node->then);
           printf("  push 0\n"); //mainでpopするので、入れておく
-          printf("  .Lend%d:\n", id);
+          printf("  .Lend%d:\n", if_id);
         }
         return;
+      case ND_WHILE:
+        int while_id = label_id++;
+        printf("  .Lbegin%d:\n", while_id);
+        gen(node->cond);
+        printf("  pop rax\n");
+        printf("  cmp rax, 0\n");
+        printf("  je  .Lend%d\n", while_id);
+        gen(node->then);
+        printf("  jmp .Lbegin%d\n", while_id);
+        printf("  .Lend%d:\n", while_id);
+
     }
     switch (node->kind) {
         case ND_NUM:
