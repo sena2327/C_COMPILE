@@ -1,5 +1,5 @@
 #!/bin/bash
-cc -c -o helper.o helper.c
+x86_64-linux-gnu-gcc -c -o helper.o helper.c
 
 assert() {
   expected="$1"

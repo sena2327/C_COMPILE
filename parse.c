@@ -26,6 +26,9 @@ struct Node {
     //関数用
     char* func_name;
     int func_len;
+    Node* func_arg[6];
+    int arg_len;
+
   };
 
 struct Token {
@@ -252,7 +255,17 @@ Node *primary() {
     Node *node = calloc(1, sizeof(Node));
     //引数なしの関数
     if(consume("(")){
-      expect(")");
+      //引数を足していく
+      int len = 0;
+      if (!consume(")")) {
+        node->func_arg[len] = expr();
+        while (consume(",")) {
+          node->func_arg[len] = expr();
+          len++;
+        }
+        node->func_len = len;
+        expect(")");
+      }
       node->kind = ND_FUNCTION;
       node->func_name = tok->str;
       node->func_len = tok->len;
