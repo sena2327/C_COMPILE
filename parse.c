@@ -23,7 +23,7 @@ struct Node {
     //block
     Node* body;
     Node* next;
-    //関数よう
+    //関数用
     char* func_name;
     int func_len;
   };
@@ -255,7 +255,7 @@ Node *primary() {
       expect(")");
       node->kind = ND_FUNCTION;
       node->func_name = tok->str;
-      node->len = tok->len;
+      node->func_len = tok->len;
     }
     //変数扱い
     else{

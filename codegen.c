@@ -18,6 +18,9 @@ struct Node {
   //block
   Node* body;
   Node* next;
+  //関数用
+  char* func_name;
+  int func_len;
 };
 // トークン型
 struct Token {
@@ -106,6 +109,7 @@ void gen(Node *node) {
         return;
       case ND_FUNCTION:
         printf("  call %s\n",node->func_name);
+        printf("  push 0\n"); //mainでpopするので、入れておく
         return;
     }
     switch (node->kind) {
