@@ -8,3 +8,7 @@ int foo(void) {
 int hoo(int a, int b){
   return a+b;
 }
+
+int zoo(int a, int b,int c, int d){
+  return a+b-c+d;
+}

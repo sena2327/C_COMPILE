@@ -445,10 +445,45 @@ Node *stmt() {
   return node;
 }
 
+int params() {
+  int n = 0;
+  Token *tok = consume_ident();
+  if (!tok) return 0;
+
+  // 1個目
+  register_lvar(tok);
+  n++;
+
+  // 2個目以降
+  while (consume(",")) {
+    tok = consume_ident();
+    if (!tok) error("引数名が必要");
+    register_lvar(tok);
+    n++;
+  }
+
+  return n;
+}
+
+Node *funcdef() {
+  Token *tok = consume_ident();
+  if(!tok){
+    error("関数定義が破綻しています"):
+  }
+  consume("(");
+  if(!consume(")")){
+    params();
+  }
+  expect(")");
+  consume("{");
+  while(!consume("}")){
+    stmt();
+  }
+}
 
 Node *program() {
   int i = 0;
   while (!at_eof())
-    code[i++] = stmt();
+    code[i++] = funcdef();
   code[i] = NULL;
 }

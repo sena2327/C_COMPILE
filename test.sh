@@ -43,5 +43,6 @@ assert 3 "b = 0;for(a = 0; a < 3; a = a + 1) {b = b + 1;} return b;"
 assert 0 "foo();"
 assert 2 "hoo(1,1);"
 assert 100 "hoo(50,50);"
+assert 2 "hoo(1,1,1,1);"
 
 echo OK
