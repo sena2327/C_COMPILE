@@ -1,11 +1,15 @@
 #!/bin/bash
 x86_64-linux-gnu-gcc -c -o helper.o helper.c
 
+wrap_main() {
+  echo "main() { $1 }"
+}
+
 assert() {
   expected="$1"
   input="$2"
 
-  ./9cc "$input" > tmp.s
+  ./9cc "$(wrap_main "$input")" > tmp.s
   x86_64-linux-gnu-gcc -static -o tmp tmp.s helper.o
   qemu-x86_64 ./tmp
   actual="$?"
