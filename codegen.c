@@ -93,6 +93,13 @@ void gen(Node *node) {
         printf("  .Lend%d:\n", for_id);
         printf("  push 0\n"); //mainでpopするので、入れておく
         return;
+      case ND_BLOCK:
+        while(node->body){
+          gen(node->body);
+          printf("  pop rax\n");
+          node = node->next;
+        }
+        return;
     }
     switch (node->kind) {
         case ND_NUM:
