@@ -255,7 +255,7 @@ Node *primary() {
       expect(")");
       node->kind = ND_FUNCTION;
       node->func_name = tok->str;
-      node->len -> tok->len;
+      node->len = tok->len;
     }
     //変数扱い
     else{
